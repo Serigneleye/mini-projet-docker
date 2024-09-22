@@ -153,6 +153,8 @@ test image docker:
     - docker load < alpinehelloworld.tar
     - docker run -d -p 80:5000 -e PORT=5000 --name webapp alpinehelloworld
     - sleep 5
+    - mkdir -p $APK_CACHE_DIR
+    - apk add curl --cache-dir $APK_CACHE_DIR
     - curl "http://docker" | grep  "Hello world!"
   cache:
     key: cache-apk
@@ -269,4 +271,3 @@ test prod:
   stage: Test prod
   environment:
     name: prod
-      
