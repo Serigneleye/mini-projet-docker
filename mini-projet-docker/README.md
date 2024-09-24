@@ -112,5 +112,5 @@ Your delivery will be evaluated based on:
 
 **Good luck!**
 
-(![Good luck](image-1.png))
+([![Good luck](image-1.png)](https://www.bing.com/images/search?view=detailV2&ccid=LBQ0rPO3&id=6C7F5370183F1F754D03C931B582C73B498117EF&thid=OIP.LBQ0rPO30ToitP9y8HAaBwHaHa&mediaurl=https%3a%2f%2fi.pinimg.com%2foriginals%2f24%2f7c%2fd4%2f247cd417885129ae80ee12675ae0b839.jpg&cdnurl=https%3a%2f%2fth.bing.com%2fth%2fid%2fR.2c1434acf3b7d13a22b4ff72f0701a07%3frik%3d7xeBSTvHgrUxyQ%26pid%3dImgRaw%26r%3d0&exph=800&expw=800&q=image+de+good+luck&simid=608038396394878487&FORM=IRPRST&ck=39FB4E1C9ED422F64B4A396A24E8D708&selectedIndex=23&itb=0))
 
