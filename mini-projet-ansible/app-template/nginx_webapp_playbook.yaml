@@ -1,6 +1,6 @@
 ---
 # YAML documents begin with the document separator ---
-- hosts: staging
+- hosts: prod
   become: true
   roles:
     # Le rôle Nginx doit être exécuté en premier
