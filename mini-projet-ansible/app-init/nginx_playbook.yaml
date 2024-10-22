@@ -16,16 +16,15 @@
   # can also be used for pre and post tasks
   tasks:
 
-    - name: Définir la variable nginx_root_location en fonction de l'OS
+    - name: Définir la variable nginx_root_location en fonction de la distribution
       set_fact:
-        nginx_root_location: >-
-          {% if ansible_os_family == "RedHat" %}
-            /usr/share/nginx/html
-          {% elif ansible_os_family == "Debian" %}
-            /var/www/html
-          {% else %}
-            /var/www/html
-          {% endif %}
+        nginx_root_location: "/usr/share/nginx/html"
+      when: ansible_os_family == "RedHat"
+
+    - name: Définir la variable nginx_root_location pour Ubuntu
+      set_fact:
+        nginx_root_location: "/var/www/html"
+      when: ansible_os_family == "Debian"
   
     - name: Install EPEL
       yum:
