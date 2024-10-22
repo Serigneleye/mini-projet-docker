@@ -6,7 +6,7 @@
 -
 
   # Hosts: where our play will run and options it will run with
-  hosts: linux
+  hosts: prod
   
   # Vars: variables that will apply to the play, on all target systems
   vars_files:
@@ -15,6 +15,18 @@
   # Tasks: the list of tasks that will be executed within the play, this section
   # can also be used for pre and post tasks
   tasks:
+
+    - name: Définir la variable nginx_root_location en fonction de l'OS
+      set_fact:
+        nginx_root_location: >-
+          {% if ansible_os_family == "RedHat" %}
+            /usr/share/nginx/html
+          {% elif ansible_os_family == "Debian" %}
+            /var/www/html
+          {% else %}
+            /var/www/html
+          {% endif %}
+  
     - name: Install EPEL
       yum:
         name: epel-release
