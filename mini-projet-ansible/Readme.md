@@ -17,7 +17,7 @@ Ce projet consiste en deux étapes pour déployer une application à l'aide d'An
 3. Vérifier que l'application est disponible :
    - Utilisez un navigateur web ou une commande curl pour vérifier que l'application est accessible à l'adresse spécifiée.
 
-## Partie 2 : Déploiement de l'Application en Conteneur avec Docker et Nginx
+## Partie 2 : Déploiement de l'Application en Conteneur avec Docker et Nginx en utilisant les rôles ansible
 
 ### Étapes à suivre
 
