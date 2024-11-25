@@ -2,119 +2,98 @@
 # The deployement of my application PayMyBuddy is working
 ![image](https://github.com/user-attachments/assets/2ad5b326-a3f6-4f97-b887-2a331403b783)
 
-
-This repository contains the *PayMyBuddy* application, which allows users to manage financial transactions. It includes a Spring Boot backend and MySQL database.
-
-**![PayMyBuddy Overview](https://lh7-rt.googleusercontent.com/docsz/AD_4nXf0fGeMjotdY0KzJL13cmGhXad3GM_kn7OSXZJ4CCSQ89zZTlrhBVVi91QjRMgVeszmUMAMAgyavzr4VyQ9YOAUiWmL2sF6aVQYiJPLZfztxv7ERNsIra2O_2SYIX5ZFY5eOARMeI2qnOwrIymuyJnvtuYs?key=mLqAl_ccMoG4hHcRzSYKpw)**
-
----
-
-## Objectives
-
-This POC demonstrates the deployment of the *PayMyBuddy* app using Docker containers, with a focus on:
-
-- Improving deployment processes
-- Versioning infrastructure releases
-- Implementing best practices for Docker
-- Using Infrastructure as Code
-
-### Key Themes:
-
-- Dockerization of the backend and database
-- Orchestration with Docker Compose
-- Securing the deployment process
-- Deploying and managing Docker images via Docker Registry
-
----
-
-## Context
-
-*PayMyBuddy* is an application for managing financial transactions between friends. The current infrastructure is tightly coupled and manually deployed, resulting in inefficiencies. We aim to improve scalability and streamline the deployment process using Docker and container orchestration.
-
----
-
-## Infrastructure
-
-The infrastructure will run on a Docker-enabled server with **Ubuntu 20.04**. This proof-of-concept (POC) includes containerizing the Spring Boot backend and MySQL database and automating deployment using Docker Compose.
-
-### Components:
-
-- **Backend (Spring Boot):** Manages user data and transactions
-- **Database (MySQL):** Stores users, transactions, and account details
-- **Orchestration:** Uses Docker Compose to manage the entire application stack
-
----
-
-## Application
-
-*PayMyBuddy* is divided into two main services:
-
-1. **Backend Service (Spring Boot):**
-   - Exposes an API to handle transactions and user interactions
-   - Connects to a MySQL database for persistent storage
-
-2. **Database Service (MySQL):**
-   - Stores user and transaction data
-   - Exposed on port 3306 for the backend to connect
+## How I proceed to make the deployment.
 
 ### Build and Test (7 Points)
 
-You will build and deploy the backend and MySQL database in Docker containers.
+First make a Simple dockerfile for the backend image that I called  **mybuddyimage** and the base image is  Base image: `amazoncorretto:17-alpine` .
+Copy the paymybuddy.jar in the /app of the container which is my workdir.
+![image](https://github.com/user-attachments/assets/4849f887-f06f-45b6-a8bc-dd11aef53a0e)
 
-#### Database Initialization
-The database schema is initialized using the initdb directory, which contains SQL scripts to set up the required tables and initial data. These scripts are automatically executed when the MySQL container starts.
+Built the image by Running :
+**docker build -t paymybuddyimage .**
 
-#### Extra Challenges (Optional)
-Secure Sensitive Information: Use Docker secrets or .env files to securely store sensitive information like database credentials.
 
-User Authentication: Add user authentication to the backend to restrict access to the API and transactions.
-
-1. **Backend Dockerfile:**
-   - Base image: `amazoncorretto:17-alpine`
-   - Copy backend JAR file and expose port 8080
-   - CMD: Run the backend service
-   
-2. **Database Setup:**
-   - Use MySQL as a Docker service, mounting the data to a persistent volume
-   - Expose port 3306
+Couldn' test it yet because the database was not set.
+Decide to use directly the mysql native image in my final docker compose and exposing 3306
 
 ### Orchestration with Docker Compose (5 Points)
 
-The `docker-compose.yml` will deploy both services:
-- **paymybuddy-backend:** Runs the Spring Boot application.
-- **paymybuddy-db:** MySQL database to handle user data and transactions.
+The `docker-compose.yml`  deploy 2 services:
+- **paymybuddy-backend:**  for the backend 
+- **paymybuddy-db:**  for the database
+  
+  here is the service **paymybuddy-db:** of the mysql database using directly mysql:8.0 image
+  ![image](https://github.com/user-attachments/assets/7645f901-ea5c-4ffd-bd1d-c8812cb08629)
 
-Key features:
-- Services depend on each other for smooth orchestration
-- Volumes for persistent storage
-- Environment variables for secure configuration
+  I used an **.env** to store database info for more security
+  I mounted two elements in this service:
+   The database data
+     - db_data:/var/lib/mysql
+   and the directory of initialization of the database
+    - ./initdb:/docker-entrypoint-initdb.d
+   In this following line we have the network sharing by services
+    networks:
+      - app_network
+        
+    And exposing the port 3306
+  the **.env** file :
+  MYSQL_ROOT_PASSWORD=admin
+  MYSQL_DATABASE=db_paymybuddy
+  MYSQL_USER=serigne
+  MYSQL_PASSWORD=serigne
 
----
+here is the service **paymybuddy-backend:** of the backend  using the image created before paymybuddyimage
+![image](https://github.com/user-attachments/assets/2a9c7b81-ad07-45d6-955c-f3d0ffb0b499)
+
+this following link allows to connect to the database: with paymybuddy-db the name of the service db.
+SPRING_DATASOURCE_URL: jdbc:mysql://paymybuddy-db:3306/${MYSQL_DATABASE}
+
+Use this following instruction to make sure the  database is initialized and healthy before the backeng starting.
+    depends_on:
+      - paymybuddy-db
+After define the network and the volumes:
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  db_data:
+
+## PLUS:
+ **USE docker logs <name of container> to see state of my containers :** 
+ for example the backend :
+ ![image](https://github.com/user-attachments/assets/0ce4d869-4404-4db7-a40c-d828d8b8464c)
+
+ **ADD MY SELF AS A USER FOR CONNECTING TO THE APPLICATION**
+ ![image](https://github.com/user-attachments/assets/0ba77944-8075-486b-99ed-7f2ad2de976e)
+
+ **THE FIRST PAGE OF THE APPLICATION**
+ ![image](https://github.com/user-attachments/assets/a324aa2b-ecb8-4a8a-a0b6-a072d821003f)
+
+ **RUNNING DOCKER COMPOSE**
+![image](https://github.com/user-attachments/assets/45b207f3-4514-4497-bbd0-e58e893f9dc9)
+
+
+
 
 ## Docker Registry (4 Points)
+**Build the images for both backend and MySQL**
+![image](https://github.com/user-attachments/assets/be005a2d-78df-429b-956f-fd9f467240b8)
 
-You need to push your built images to a private Docker registry and deploy the images using Docker Compose.
+![image](https://github.com/user-attachments/assets/e24e46c6-1ca2-4652-8357-f313085d2d89)
 
-### Steps:
-1. Build the images for both backend and MySQL.
-2. Deploy a private Docker registry.
-3. Push your images to the registry and use them in `docker-compose.yml`.
+**Deploy a private Docker registry**
+![image](https://github.com/user-attachments/assets/203d5e96-dbdb-4852-ad74-43d8ccc146fc)
 
----
+**Push your images to the registry and use them in `docker-compose.yml`.**
+![image](https://github.com/user-attachments/assets/2f620e50-5c7b-42d1-8b98-16c0fc2483e4)
 
 ## Delivery (4 Points)
 
-For your delivery, provide the following in your repository:
+For your delivery
 
-- **README** with screenshots and explanations.
-- **Dockerfile** and **docker-compose.yml**.
-- **Screenshots** showing the application running.
+here is the **README** with screenshots and explanations.
+the  **Dockerfile** and **docker-compose.yml** are in the folder.
+
   
-Your delivery will be evaluated based on:
-- Quality of explanations and screenshots
-- Repository structure and clarity
-
-**Good luck!**
-
-**![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXc-CjKFk4NY9yXiR1oheHsFR4YYn4HcD_0A6fgd11tHcT3p1U2RKXvIs6HflkvuLOOUzFxzxYCjDno2f1p6_q31dDE9AaUoEx1pi0Fs9ApJG2czL-88xrx3XO-oEP5ZXXsyXw0GKjA2W0A5q1Bk979SB1M?key=mLqAl_ccMoG4hHcRzSYKpw)**
-
